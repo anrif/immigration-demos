@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Test d'éligibilité — Immigration au Canada</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet">
+
+<!-- =================================================================== -->
+<!--  ⚙️  CONFIG — LA SEULE PARTIE À CHANGER POUR CHAQUE CABINET          -->
+<!--     Change ces 6 lignes et le test est rhabillé pour un client.     -->
+<!-- =================================================================== -->
+<script>
+const CONFIG = {
+  brandName:   "Immigration Encima",                                 // ✅ nom exact du cabinet
+  accent:      "#00442e",                                            // ✅ leur VRAIE couleur de marque (vert foncé, tirée de leur logo)
+  accentDark:  "#00301f",                                            // ✅ version foncée assortie
+  logoText:    "IE",                                                // ✅ initiales (ou mets leur logo via logoUrl)
+  logoUrl:     "",                                                  // (optionnel) URL d'un logo image
+  bookingUrl:  "https://www.immigrationencima.com/nous-contacter.php",// ✅ leur VRAIE page de consultation
+  contactEmail:"anrif2@gmail.com"                               // ⚠️ ils n'ont PAS d'email public — mets LE TIEN ici
+};
+</script>
+<!-- =================================================================== -->
+
+<style>
+  :root {
+    --accent: #0F6E63;
+    --accent-dark: #0A4F47;
+    --ink: #1A2521;
+    --ink-soft: #52605b;
+    --line: #E4E7E5;
+    --paper: #FBFBF9;
+    --card: #FFFFFF;
+    --good: #1E7D54;
+    --radius: 14px;
+    --shadow: 0 1px 2px rgba(20,40,35,.04), 0 12px 32px -12px rgba(20,40,35,.12);
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { -webkit-text-size-adjust: 100%; }
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    color: var(--ink);
+    background: var(--paper);
+    line-height: 1.55;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+  }
+  .wrap { width: 100%; max-width: 620px; margin: 0 auto; padding: 24px 20px 48px; flex: 1; display: flex; flex-direction: column; }
+
+  /* Header */
+  header { display: flex; align-items: center; gap: 12px; padding: 8px 0 28px; }
+  .logo {
+    width: 40px; height: 40px; border-radius: 10px;
+    background: var(--accent); color: #fff;
+    display: grid; place-items: center;
+    font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 15px; letter-spacing: .5px;
+    flex-shrink: 0; overflow: hidden;
+  }
+  .logo img { width: 100%; height: 100%; object-fit: contain; }
+  .brand-name { font-weight: 600; font-size: 15px; }
+  .brand-tag { font-size: 12.5px; color: var(--ink-soft); }
+
+  /* Progress — la "route" vers le Canada */
+  .progress { margin-bottom: 26px; }
+  .progress-track { height: 5px; background: var(--line); border-radius: 99px; overflow: hidden; }
+  .progress-fill { height: 100%; width: 0%; background: var(--accent); border-radius: 99px; transition: width .45s cubic-bezier(.4,0,.2,1); }
+  .progress-label { font-size: 12px; color: var(--ink-soft); margin-top: 8px; letter-spacing: .2px; }
+
+  /* Card */
+  .card { background: var(--card); border: 1px solid var(--line); border-radius: var(--radius); box-shadow: var(--shadow); padding: 30px 28px; }
+  @media (max-width: 520px) { .card { padding: 24px 18px; } }
+
+  .step { display: none; }
+  .step.active { display: block; animation: rise .4s cubic-bezier(.16,1,.3,1); }
+  @keyframes rise { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: none; } }
+
+  .eyebrow { font-size: 12px; font-weight: 600; letter-spacing: .12em; text-transform: uppercase; color: var(--accent); margin-bottom: 12px; }
+  h1 { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 700; font-size: 30px; line-height: 1.12; letter-spacing: -.02em; margin-bottom: 10px; }
+  h2 { font-family: 'Bricolage Grotesque', sans-serif; font-weight: 600; font-size: 21px; line-height: 1.2; letter-spacing: -.01em; margin-bottom: 20px; }
+  .lede { color: var(--ink-soft); font-size: 15.5px; margin-bottom: 26px; }
+
+  /* Options */
+  .options { display: flex; flex-direction: column; gap: 10px; }
+  .opt {
+    display: flex; align-items: center; gap: 13px;
+    border: 1.5px solid var(--line); border-radius: 11px;
+    padding: 15px 16px; cursor: pointer; background: #fff;
+    transition: border-color .15s, background .15s, transform .06s;
+    font-size: 15px; text-align: left; width: 100%; color: var(--ink);
+  }
+  .opt:hover { border-color: var(--accent); background: #F6FAF9; }
+  .opt:active { transform: scale(.995); }
+  .opt .dot { width: 18px; height: 18px; border-radius: 50%; border: 2px solid var(--line); flex-shrink: 0; transition: .15s; }
+  .opt.sel { border-color: var(--accent); background: #F2F8F6; }
+  .opt.sel .dot { border-color: var(--accent); background: var(--accent); box-shadow: inset 0 0 0 3px #fff; }
+
+  /* Nav */
+  .nav { display: flex; justify-content: space-between; align-items: center; margin-top: 24px; gap: 12px; }
+  .btn {
+    font-family: 'Inter', sans-serif; font-weight: 600; font-size: 15px;
+    border: none; border-radius: 10px; padding: 13px 22px; cursor: pointer;
+    transition: background .15s, opacity .15s, transform .06s;
+  }
+  .btn-primary { background: var(--accent); color: #fff; }
+  .btn-primary:hover { background: var(--accent-dark); }
+  .btn-primary:active { transform: scale(.98); }
+  .btn-primary:disabled { opacity: .4; cursor: not-allowed; }
+  .btn-ghost { background: transparent; color: var(--ink-soft); padding: 13px 8px; }
+  .btn-ghost:hover { color: var(--ink); }
+  .btn-full { width: 100%; text-align: center; display: block; text-decoration: none; }
+
+  /* Inputs */
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13.5px; font-weight: 500; margin-bottom: 6px; }
+  .field input {
+    width: 100%; border: 1.5px solid var(--line); border-radius: 10px;
+    padding: 13px 14px; font-size: 15px; font-family: inherit; color: var(--ink);
+    transition: border-color .15s;
+  }
+  .field input:focus { outline: none; border-color: var(--accent); }
+
+  /* Result */
+  .result-badge { display: inline-flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; padding: 6px 12px; border-radius: 99px; margin-bottom: 18px; }
+  .b-high { background: #E6F4EC; color: var(--good); }
+  .b-mid  { background: #FdF4E3; color: #9A6B12; }
+  .b-eval { background: #EEF1F4; color: #45566B; }
+
+  .match { border: 1px solid var(--line); border-left: 3px solid var(--accent); border-radius: 10px; padding: 16px 18px; margin-bottom: 12px; background: #fff; }
+  .match h3 { font-family: 'Bricolage Grotesque', sans-serif; font-size: 16.5px; font-weight: 600; margin-bottom: 4px; }
+  .match p { font-size: 14px; color: var(--ink-soft); }
+
+  .cta-box { background: linear-gradient(160deg, #F2F8F6, #fff); border: 1px solid var(--line); border-radius: 12px; padding: 22px; margin-top: 22px; text-align: center; }
+  .cta-box p { font-size: 14.5px; color: var(--ink-soft); margin-bottom: 16px; }
+
+  .disclaimer { font-size: 12px; color: var(--ink-soft); margin-top: 22px; padding-top: 18px; border-top: 1px solid var(--line); line-height: 1.5; }
+
+  footer { text-align: center; font-size: 12px; color: var(--ink-soft); padding: 22px 0 8px; }
+  footer a { color: var(--ink-soft); }
+
+  @media (prefers-reduced-motion: reduce) {
+    * { animation: none !important; transition: none !important; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="logo" id="logo"></div>
+    <div>
+      <div class="brand-name" id="brandName"></div>
+      <div class="brand-tag">Consultation en immigration canadienne</div>
+    </div>
+  </header>
+
+  <div class="progress">
+    <div class="progress-track"><div class="progress-fill" id="pfill"></div></div>
+    <div class="progress-label" id="plabel">Commençons</div>
+  </div>
+
+  <div class="card" id="card"><!-- steps injected here --></div>
+
+  <footer>
+    Outil d'évaluation indicative — <span id="footBrand"></span>
+  </footer>
+</div>
+
+<script>
+/* ---------- Appliquer la config (marque + couleurs) ---------- */
+document.documentElement.style.setProperty('--accent', CONFIG.accent);
+document.documentElement.style.setProperty('--accent-dark', CONFIG.accentDark);
+document.getElementById('brandName').textContent = CONFIG.brandName;
+document.getElementById('footBrand').textContent = CONFIG.brandName;
+document.title = "Test d'éligibilité — " + CONFIG.brandName;
+const logoEl = document.getElementById('logo');
+if (CONFIG.logoUrl) { logoEl.innerHTML = '<img src="' + CONFIG.logoUrl + '" alt="">'; }
+else { logoEl.textContent = CONFIG.logoText || CONFIG.brandName.slice(0,2).toUpperCase(); }
+
+/* ---------- Les questions ---------- */
+const QUESTIONS = [
+  { key: 'destination', eyebrow: 'Votre projet', q: 'Où souhaitez-vous vous établir ?',
+    opts: [ ['quebec','Au Québec'], ['canada','Ailleurs au Canada'], ['unsure','Je ne sais pas encore'] ] },
+  { key: 'age', eyebrow: 'Profil', q: 'Quel est votre âge ?',
+    opts: [ ['18-29','18 à 29 ans'], ['30-39','30 à 39 ans'], ['40-44','40 à 44 ans'], ['45+','45 ans ou plus'] ] },
+  { key: 'education', eyebrow: 'Études', q: 'Quel est votre plus haut diplôme ?',
+    opts: [ ['secondary','Secondaire'], ['college','Collégial / technique'], ['bachelor','Baccalauréat / Licence'], ['master_phd','Maîtrise ou Doctorat'] ] },
+  { key: 'french', eyebrow: 'Langues', q: 'Votre niveau de français ?',
+    opts: [ ['advanced','Courant'], ['intermediate','Intermédiaire'], ['basic','Notions'], ['none','Aucun'] ] },
+  { key: 'english', eyebrow: 'Langues', q: 'Votre niveau d\u2019anglais ?',
+    opts: [ ['advanced','Courant'], ['intermediate','Intermédiaire'], ['basic','Notions'], ['none','Aucun'] ] },
+  { key: 'experience', eyebrow: 'Expérience', q: 'Années d\u2019expérience de travail qualifié ?',
+    opts: [ ['6+','6 ans ou plus'], ['3-5','3 à 5 ans'], ['1-2','1 à 2 ans'], ['0','Moins d\u2019un an'] ] },
+  { key: 'jobOffer', eyebrow: 'Emploi', q: 'Avez-vous une offre d\u2019emploi d\u2019un employeur canadien ?',
+    opts: [ ['yes','Oui'], ['no','Non, pas encore'] ] }
+];
+
+const answers = {};
+let step = 0; // 0..QUESTIONS.length-1 = questions ; then contact ; then result
+const CONTACT_STEP = QUESTIONS.length;
+const RESULT_STEP = QUESTIONS.length + 1;
+const TOTAL = QUESTIONS.length + 1; // pour la barre (contact inclus)
+
+const card = document.getElementById('card');
+const pfill = document.getElementById('pfill');
+const plabel = document.getElementById('plabel');
+
+function render() {
+  if (step < QUESTIONS.length) renderQuestion(QUESTIONS[step]);
+  else if (step === CONTACT_STEP) renderContact();
+  else renderResult();
+  updateProgress();
+}
+
+function updateProgress() {
+  const pct = Math.min(100, Math.round((step / TOTAL) * 100));
+  pfill.style.width = (step >= RESULT_STEP ? 100 : pct) + '%';
+  if (step < QUESTIONS.length) plabel.textContent = 'Question ' + (step+1) + ' sur ' + QUESTIONS.length;
+  else if (step === CONTACT_STEP) plabel.textContent = 'Dernière étape';
+  else plabel.textContent = 'Votre résultat';
+}
+
+function renderQuestion(item) {
+  const sel = answers[item.key];
+  card.innerHTML = `
+    <div class="step active">
+      <div class="eyebrow">${item.eyebrow}</div>
+      <h2>${item.q}</h2>
+      <div class="options">
+        ${item.opts.map(([v,l]) => `
+          <button class="opt ${sel===v?'sel':''}" data-v="${v}">
+            <span class="dot"></span><span>${l}</span>
+          </button>`).join('')}
+      </div>
+      <div class="nav">
+        ${step>0 ? '<button class="btn btn-ghost" id="back">← Retour</button>' : '<span></span>'}
+        <button class="btn btn-primary" id="next" ${sel?'':'disabled'}>Continuer</button>
+      </div>
+    </div>`;
+  card.querySelectorAll('.opt').forEach(b => b.onclick = () => {
+    answers[item.key] = b.dataset.v;
+    card.querySelectorAll('.opt').forEach(x => x.classList.remove('sel'));
+    b.classList.add('sel');
+    card.querySelector('#next').disabled = false;
+  });
+  const back = card.querySelector('#back'); if (back) back.onclick = () => { step--; render(); };
+  card.querySelector('#next').onclick = () => { step++; render(); };
+}
+
+function renderContact() {
+  card.innerHTML = `
+    <div class="step active">
+      <div class="eyebrow">Presque fini</div>
+      <h2>Où envoyer votre résultat ?</h2>
+      <p class="lede">Indiquez vos coordonnées pour recevoir votre évaluation détaillée et, si vous le souhaitez, réserver un premier échange.</p>
+      <div class="field"><label>Prénom</label><input id="fn" type="text" placeholder="Votre prénom" autocomplete="given-name"></div>
+      <div class="field"><label>Courriel</label><input id="em" type="email" placeholder="vous@exemple.com" autocomplete="email"></div>
+      <div class="nav">
+        <button class="btn btn-ghost" id="back">← Retour</button>
+        <button class="btn btn-primary" id="next" disabled>Voir mon résultat</button>
+      </div>
+    </div>`;
+  const fn = card.querySelector('#fn'), em = card.querySelector('#em'), next = card.querySelector('#next');
+  function check(){ next.disabled = !(fn.value.trim() && /\S+@\S+\.\S+/.test(em.value)); }
+  fn.oninput = check; em.oninput = check;
+  card.querySelector('#back').onclick = () => { step--; render(); };
+  next.onclick = () => {
+    answers.firstName = fn.value.trim(); answers.email = em.value.trim();
+    // 👉 POUR LA PROD : envoyer `answers` à ton backend / CRM ici (fetch POST).
+    console.log('Lead capturé :', answers);
+    step++; render();
+  };
+}
+
+/* ---------- Logique d'évaluation (indicative) ---------- */
+function evaluate(a) {
+  const matches = [];
+  const langHigh = (a.french==='advanced' || a.french==='intermediate' || a.english==='advanced' || a.english==='intermediate');
+  const frGood = (a.french==='advanced' || a.french==='intermediate');
+  const eduGood = (a.education==='college' || a.education==='bachelor' || a.education==='master_phd');
+  const expGood = (a.experience==='3-5' || a.experience==='6+');
+  const ageGood = (a.age==='18-29' || a.age==='30-39');
+
+  // Mobilité francophone — argument fort pour une audience francophone
+  if (frGood && a.destination !== 'quebec' && eduGood) {
+    matches.push(['Mobilité francophone', 'Permis de travail sans EIMT pour les francophones s\u2019établissant hors Québec — une voie souvent plus rapide.', frGood && a.french==='advanced' ? 3 : 2]);
+  }
+  // Programmes du Québec
+  if (a.destination === 'quebec' && frGood) {
+    matches.push(['Programmes du Québec (Arrima / PEQ)', 'Votre profil francophone correspond aux volets de sélection québécois pour travailleurs qualifiés.', a.french==='advanced' ? 3 : 2]);
+  }
+  // Entrée express
+  if (langHigh && eduGood && (a.experience!=='0') && a.age!=='45+') {
+    let s = 1; if (expGood) s++; if (ageGood) s++; if (a.education==='master_phd') s++;
+    matches.push(['Entrée express (travailleurs qualifiés)', 'Système fédéral à points : diplôme, langue, âge et expérience jouent en votre faveur.', Math.min(3, s)]);
+  }
+  // Emploi
+  if (a.jobOffer === 'yes') {
+    matches.push(['Voie liée à un emploi', 'Une offre d\u2019emploi peut accélérer plusieurs programmes et ajouter des points décisifs.', 3]);
+  }
+  // Études
+  if (a.age==='18-29' && (a.experience==='0' || a.experience==='1-2') && (a.education==='secondary' || a.education==='college')) {
+    matches.push(['Permis d\u2019études \u2192 résidence', 'Étudier au Canada ouvre ensuite un permis de travail post-diplôme, puis la résidence permanente.', 2]);
+  }
+
+  matches.sort((x,y) => y[2]-x[2]);
+  const top = matches.slice(0,3);
+  const best = top.length ? top[0][2] : 0;
+  let level;
+  if (top.length && best >= 3) level = 'high';
+  else if (top.length && best >= 2) level = 'mid';
+  else level = 'eval';
+  return { top, level };
+}
+
+function renderResult() {
+  const { top, level } = evaluate(answers);
+  const badge = { high: ['b-high','Profil prometteur'], mid: ['b-mid','Plusieurs pistes possibles'], eval: ['b-eval','À évaluer avec un conseiller'] }[level];
+
+  const matchHtml = top.length
+    ? top.map(([t,d]) => `<div class="match"><h3>${t}</h3><p>${d}</p></div>`).join('')
+    : `<div class="match"><h3>Un accompagnement personnalisé s\u2019impose</h3><p>Votre situation mérite l\u2019\u0153il d\u2019un conseiller pour identifier la meilleure voie.</p></div>`;
+
+  card.innerHTML = `
+    <div class="step active">
+      <div class="result-badge ${badge[0]}">● ${badge[1]}</div>
+      <h1>Merci ${answers.firstName || ''} 👋</h1>
+      <p class="lede">Voici les voies d\u2019immigration qui semblent les plus proches de votre profil. Ceci est une première indication — un conseiller réglementé peut confirmer votre admissibilité réelle.</p>
+      ${matchHtml}
+      <div class="cta-box">
+        <p>Prochaine étape : un échange avec un conseiller de ${CONFIG.brandName} pour transformer ces pistes en plan concret.</p>
+        <a class="btn btn-primary btn-full" href="${CONFIG.bookingUrl}" target="_blank" rel="noopener">Réserver un premier échange</a>
+      </div>
+      <p class="disclaimer">
+        Cet outil fournit une évaluation <strong>indicative</strong> basée sur vos réponses et ne constitue pas un avis juridique ni une garantie d\u2019admissibilité.
+        Seul un conseiller réglementé en immigration (membre du CCIC) peut évaluer officiellement votre dossier.
+        Une question ? Écrivez à <a href="mailto:${CONFIG.contactEmail}">${CONFIG.contactEmail}</a>.
+      </p>
+    </div>`;
+}
+
+render();
+</script>
+</body>
+</html>
